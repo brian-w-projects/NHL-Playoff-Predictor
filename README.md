@@ -1,2 +1,4 @@
 # hockey
 hockey machine learning project
+
+FIX TEAMS SO THAT ARIZONA COYOTES AND PHOENIX COYOTES ARE THE SAME THING

@@ -36,11 +36,11 @@ def create_raw_data(years):
         time.sleep(5)
 
     raw_data = raw_data \
+        .loc[lambda x: x['away_goals'] != ''] \
         .reset_index(drop=True) \
         .reset_index() \
         .rename(columns={'index': 'id'}) \
-        .assign(id=lambda x: x['id'] + 1) \
-        .loc[lambda x: x['away_goals'] != '']
+        .assign(id=lambda x: x['id'] + 1)
 
     return raw_data
 
@@ -55,9 +55,9 @@ def create_points():
 
     return points
 
+
 def create_teams(df):
-    teams = DataFrame(df['home'].unique(), columns=['team']) \
-        .assign(team=lambda x: x['team'].str.split(' ').str[-1]) \
+    teams = DataFrame(df['home'].str.split(' ').str[-1].unique(), columns=['team']) \
         .sort_values('team') \
         .reset_index(drop=True) \
         .reset_index() \
@@ -86,7 +86,8 @@ def create_playoffs(years, teams_df):
                                         team=lambda x: x.iloc[:, 0].str.split(' ').str[-1].str.replace('*', '')) \
                                 .merge(teams_df, left_on='team', right_on='team') \
                                 .drop(columns=[0, 'team']) \
-                                [['id', 'year', 'playoffs']]
+                                [['id', 'year', 'playoffs']] \
+                                .rename(columns={'id': 'team_id'})
                      ])
         time.sleep(5)
 
@@ -121,9 +122,9 @@ def create_schedule(df, teams_df):
 
 def create_results(df, teams_df):
     away = df.loc[:, ['id', 'year', 'away', 'away_goals', 'away_result']] \
-        .rename(columns={'away': 'team', 'away_goals': 'goals', 'away_result': 'result_id'})
+        .rename(columns={'away': 'team', 'away_goals': 'goals', 'away_result': 'points_id'})
     home = df.loc[:, ['id', 'year', 'home', 'home_goals', 'home_result']] \
-        .rename(columns={'home': 'team', 'home_goals': 'goals', 'home_result': 'result_id'})
+        .rename(columns={'home': 'team', 'home_goals': 'goals', 'home_result': 'points_id'})
 
     results = pd.concat([away, home]) \
         .assign(team=lambda x: x['team'].str.split(' ').str[-1]) \
@@ -134,7 +135,7 @@ def create_results(df, teams_df):
         .reset_index() \
         .rename(columns={'index': 'id'}) \
         .assign(id=lambda x: x['id'] + 1) \
-        [['id', 'game_id', 'year', 'team_id', 'goals', 'result_id']] \
+        [['id', 'game_id', 'year', 'team_id', 'goals', 'points_id']] \
         .sort_values('id')
 
     with open('data/results.csv', 'w') as writer:
@@ -144,7 +145,7 @@ def create_results(df, teams_df):
 
 
 if __name__ == '__main__':
-    years = range(2018, 2007, -1)
+    years = range(2008, 2019, 1)
     raw_data = create_raw_data(years)
     create_points()
     teams = create_teams(raw_data)
