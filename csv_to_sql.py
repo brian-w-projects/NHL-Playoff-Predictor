@@ -4,7 +4,7 @@ import csv
 mydb = mysql.connector.connect(
     host='localhost',
     user='root',
-    password='cosmic joke',
+    password='',
     database='hockey'
 )
 

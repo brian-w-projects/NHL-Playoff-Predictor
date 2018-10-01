@@ -53,7 +53,7 @@ def train_model(file):
     grid = GridSearchCV(pipeline, cv=10, param_grid=param_grid, iid=False).fit(X_train, y_train)
 
     print(f'Training Score: {grid.best_score_} and Params: {grid.best_params_}')
-    print(f'Testing Score: {grid.score(X_test, y_test)}')
+    print(f'Validation Score: {grid.score(X_test, y_test)}')
 
     with open('model.p', 'wb') as model_file:
         pickle.dump(grid, model_file)
