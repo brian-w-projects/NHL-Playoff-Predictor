@@ -73,7 +73,7 @@ def create_playoffs(years, teams_df):
     playoffs = DataFrame()
 
     for year in years:
-        r = requests.get(f'https://www.hockey-reference.com/leagues/NHL_2018.html')
+        r = requests.get(f'https://www.hockey-reference.com/leagues/NHL_{year}.html')
         soup = BeautifulSoup(r.content, 'html.parser')
 
         playoffs = pd.concat([
